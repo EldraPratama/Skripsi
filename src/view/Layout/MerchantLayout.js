@@ -41,7 +41,7 @@ const MerchantLayout = ({ children, title }) => {
         open={sidebarOpen}
         className="content-wrapper"
         onClick={() => {
-          setSidebarOpen(!sidebarOpen);
+          // setSidebarOpen(!sidebarOpen);
           // if (!sidebarOpen && width && width <= 991)
           //   setSidebarOpen(!sidebarOpen);
         }}

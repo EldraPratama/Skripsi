@@ -1,67 +1,54 @@
-// import IcDashboard from "../../assets/icons/dashboard.svg";
-// import IcUser from "../../assets/icons/user.svg";
-// import IcProduct from "../../assets/icons/product.svg";
-// import IcOrder from "../../assets/icons/order.svg";
-// import IcReport from "../../assets/icons/report.svg";
-// import IcSetting from "../../assets/icons/settings.svg";
+import { 
+  Home, 
+  Book, 
+  People, 
+  NoteAdd, 
+  Paid, 
+  Logout 
+} from '@mui/icons-material';
 
 
 const features = [
   {
-    id: "dashboard",
     text: "Beranda",
     path: "/",
     type: "item",
-    permission: "dashboard@isView",
-    // icon: IcDashboard,
   },
   {
-    id: "customers",
-    text: "Pelanggan",
-    path: "/customers",
+    text: "Home",
+    path: "/home",
     type: "item",
-    permission: "dashboard@isView",
-    // icon: IcUser,
+    icon: <Home/>,
   },
   {
-    id: "product",
-    text: "Produk",
-    path: "#",
+    text: "Buku",
+    path: "/buku",
     type: "item",
-    permission: "products@isView",
-    // icon: IcProduct,
+    icon: <Book/>,
   },
   {
-    id: "order",
-    text: "Penjualan",
-    path: "#",
+    text: "Anggota",
+    path: "/anggota",
     type: "item",
-    permission: "order@isView",
-    // icon: IcOrder,
+    icon: <People/>,
   },
   {
-    id: "finance",
-    text: "Keuangan",
-    path: "#",
+    text: "Peminjaman",
+    path: "/peminjaman",
     type: "item",
-    permission: "finance@isView",
-    // icon: IcReport,
+    icon: <NoteAdd/>,
   },
   {
-    id: "report",
-    text: "Laporan",
-    path: "#",
+    text: "Denda",
+    path: "/denda",
     type: "item",
-    permission: "products@isView",
-    // icon: IcReport,
+    icon: <Paid/>,
   },
   {
-    id: "setting",
-    text: "Pengaturan",
-    path: "#",
+    text: "Logout",
+    path: "/logout",
     type: "item",
-    permission: "products@isView",
-    // icon: IcSetting,
+    icon: <Logout/>,
   },
 ];
 

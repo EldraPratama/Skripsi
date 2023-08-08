@@ -4,6 +4,7 @@ import { Stack, Box } from "@mui/material";
 // import { NormalText } from "components/styled/text.styled";
 import { Link } from "react-router-dom";
 
+
 const NavItem = ({ item }) => {
   return (
     <BoxStyled
@@ -18,17 +19,9 @@ const NavItem = ({ item }) => {
           margin={item?.margin}
         >
           {item?.icon && (
-            <img
-              src={item?.icon}
-              alt="icon"
-              style={{
-                width: "20px",
-                height: "20px",
-                margin: "0 10px 0 0",
-              }}
-            />
+              item.icon
           )}
-          <p color={"#343a40"} fontSize="14px" >
+          <p color={"#343a40"} fontSize="14px" style={{marginLeft:"5px"}} >
             {item?.text}
           </p>
         </Stack>

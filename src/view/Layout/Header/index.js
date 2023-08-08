@@ -3,6 +3,10 @@ import React, { useState } from "react";
 //import { NormalText } from "src/components/styled/text.styled";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { 
+  Menu,
+  PowerSettingsNew 
+} from '@mui/icons-material';
 import { HeaderContainer } from "./header.styles";
 // import NotificationSection from "./Notification";
 // import { faPowerOff } from "@fortawesome/free-solid-svg-icons";
@@ -43,7 +47,7 @@ const Header = ({ open, onHamburgerClick }) => {
       <ul className="navbar-nav">
         <li className="nav-item" onClick={onHamburgerClick}>
           <IconButton>
-            {/* <FontAwesomeIcon icon={faBars}></FontAwesomeIcon> */}
+            <Menu/>
           </IconButton>
         </li>
       </ul>
@@ -102,7 +106,7 @@ const Header = ({ open, onHamburgerClick }) => {
             style={{ cursor: "pointer" }}
             href="#0"
           >
-            {/* <FontAwesomeIcon icon={faPowerOff} /> */}
+            <PowerSettingsNew/>
           </a>
         </li>
       </ul>

@@ -6,8 +6,6 @@ import NavItem from "./NavItem";
 import { Stack } from "@mui/material";
 import { SidebarContainer } from "./sidebar.styles";
 import "../../../asset/css/adminlte.css";
-// import "../../../asset/css/"
-// import useRedux from "redux/useRedux";
 
 
 const Sidebar = ({ sidebar }) => {
@@ -27,7 +25,7 @@ const Sidebar = ({ sidebar }) => {
         style={{ width: "250px", height: "57px", padding: "5% 10%" }}
       >
         <img
-          src={`${process.env.PUBLIC_URL}/logo192.png`}
+          src={`${process.env.PUBLIC_URL}/logopasim.jpeg`}
           alt={"icon"}
           style={{ width: "auto", height: "100%" }}
         />
@@ -41,14 +39,13 @@ const Sidebar = ({ sidebar }) => {
           <div className="image text-center">
             <img
               style={{ height: "5rem", width: "5rem" }}
-              src={`${process.env.PUBLIC_URL}/logo192.png`}
+              src={`${process.env.PUBLIC_URL}/smpn8.jpeg`}
               className="img-circle elevation-2"
               alt="User"
             />
           </div>
           <div className="info text-center d-block mt-2">
-            {/* {Merchant?.businessName} */}
-            Merchant
+            Perpustakaan SMPN 8 Cimahi
           </div>
         </Stack>
 
