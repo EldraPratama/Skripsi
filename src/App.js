@@ -25,8 +25,8 @@ function App() {
 
       <Route path="/buku" element={<BukuPage/>} />
       <Route path="/buku/tambah" element={<TambahBukuPage/>} />
-      <Route path="/buku/edit" element={<EditBukuPage/>} />
-      <Route path="/buku/detail" element={<DetailBukuPage/>} />
+      <Route path="/buku/edit/:id" element={<EditBukuPage/>} />
+      <Route path="/buku/detail/:id" element={<DetailBukuPage/>} />
       
       <Route path="/anggota" element={<AnggotaPage/>} />
       <Route path="/peminjaman" element={<PeminjamanPage/>} />

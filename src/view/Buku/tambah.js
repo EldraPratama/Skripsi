@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import MerchantLayout from "../Layout/MerchantLayout";
 import styles from "../Layout/styles";
+import { useNavigate } from "react-router-dom";
+
 
 import axios from 'axios';
 import {
@@ -11,7 +13,7 @@ import {
 } from "@mui/material"; 
 
 const TambahBukuPage = () => {
-  const [data, setData] = useState([]);
+  const navigate = useNavigate();
   const [kode_buku, setKode_buku] = useState("");
   const [judul, setJudul] = useState("");
   const [penulis, setPenulis] = useState("");
@@ -20,16 +22,6 @@ const TambahBukuPage = () => {
   const [harga_buku, setHarga_buku] = useState(0);
   const [stok_buku, setStok_buku] = useState(0);
 
-  useEffect(() => {
-    // Memanggil endpoint di server backend untuk mendapatkan data
-    axios.get('http://localhost:5000/api/data')
-      .then((response) => {
-        setData(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching data', error);
-      });
-  }, []);
 
   const handleAddBuku = () => {
     let body = {
@@ -44,12 +36,12 @@ const TambahBukuPage = () => {
 
     axios.post('http://localhost:5000/api/buku', body)
     .then((response) => {
-      setData(response.data);
+      console.log("sukses")
+      navigate("/buku")
     })
     .catch((error) => {
       console.error('Error add data', error);
     });
-
   }
 
 
@@ -57,7 +49,7 @@ const TambahBukuPage = () => {
   return (
     <MerchantLayout>
       <Box sx={styles.boxStyled}>
-        <h2>Tambah Data Buku</h2>
+        <h3>Tambah Data Buku</h3>
         <Stack direction="column" justifyContent={"center"} alignItems={"center"} marginTop={"30px"}>
           <TextField 
             id="outlined-basic" 
@@ -66,7 +58,7 @@ const TambahBukuPage = () => {
             onChange={(e) => setKode_buku(e.target.value)}
             sx={{
               width:"450px",
-              margin:"10px",
+              margin:"5px 10px",
             }}
           />
           <TextField 
@@ -133,8 +125,8 @@ const TambahBukuPage = () => {
             <Button
               variant={"contained"}
               color="primary"
-              style={{ fontWeight: "bold", marginRight: "200px" }}
-              onClick={() => handleAddBuku()}
+              style={{ fontWeight: "bold", marginRight: "260px" }}
+              onClick={() => navigate("/buku")}
             >
               Kembali
             </Button>

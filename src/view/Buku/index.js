@@ -30,14 +30,7 @@ const BukuPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Memanggil endpoint di server backend untuk mendapatkan data
-    axios.get('http://localhost:5000/api/buku')
-      .then((response) => {
-        setData(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching data', error);
-      });
+    handleGetBuku()
   }, []);
 
   const columns = [
@@ -47,13 +40,6 @@ const BukuPage = () => {
     { id: 'Kode', label: 'Kode Buku', minWidth: 100 },
     { id: 'Stok Buku', label: 'Stok Buku', minWidth: 100 },
     { id: 'Aksi', label: 'Aksi', minWidth: 150 },
-    // {
-    //   id: 'density',
-    //   label: 'Density',
-    //   minWidth: 170,
-    //   align: 'right',
-    //   format: (value) => value.toFixed(2),
-    // },
   ];
 
 
@@ -68,6 +54,28 @@ const BukuPage = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  // Memanggil endpoint di server backend untuk mendapatkan data
+  const handleGetBuku = () => {
+    axios.get('http://localhost:5000/api/buku')
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching data', error);
+      });
+  }
+
+  // Memanggil endpoint di server backend untuk menghapus data
+  const handleDeleteBuku = (id) => {
+    axios.delete(`http://localhost:5000/api/buku/${id}`)
+      .then((response) => {
+        handleGetBuku()
+      })
+      .catch((error) => {
+        console.error('Error fetching data', error);
+      });
+  }
   
   return (
     <MerchantLayout>
@@ -121,9 +129,24 @@ const BukuPage = () => {
                           {row.stok_buku}
                         </TableCell>
                         <TableCell align="center">
-                          <IconButton color="primary"><ZoomIn/></IconButton>                      
-                          <IconButton color="success"><Edit/></IconButton>                      
-                          <IconButton color="error"><Delete/></IconButton>                      
+                          <IconButton 
+                            color="primary"
+                            onClick={() => navigate(`/buku/detail/${row.id}`)}
+                          >
+                            <ZoomIn/>
+                          </IconButton>                      
+                          <IconButton 
+                            color="success"
+                            onClick={() => navigate(`/buku/edit/${row.id}`)}
+                          >
+                            <Edit/>
+                          </IconButton>                      
+                          <IconButton 
+                            color="error"
+                            onClick={() => handleDeleteBuku(row.id)}
+                          >
+                            <Delete/>
+                          </IconButton>                      
                         </TableCell>
                       </TableRow>
                     );
