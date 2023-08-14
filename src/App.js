@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route } from "react-router-dom";
 
 import TestingPage from './view/Testing';
-import TestingPageTwo from './view/Testing/two';
+// import TestingPageTwo from './view/Testing/two';
 import HomePage from './view/Home';
 
 import BukuPage from './view/Buku';
@@ -11,7 +11,15 @@ import EditBukuPage from './view/Buku/edit';
 import DetailBukuPage from './view/Buku/detail';
 
 import AnggotaPage from './view/Anggota';
+import TambahAnggotaPage from './view/Anggota/tambah';
+import EditAnggotaPage from './view/Anggota/edit';
+import DetailAnggotaPage from './view/Anggota/detail';
+
+
 import PeminjamanPage from './view/Peminjaman';
+import TambahPeminjamanPage from './view/Peminjaman/tambah';
+import DetailPeminjamanPage from './view/Peminjaman/detail';
+
 import DendaPage from './view/Denda';
 import LoginPage from './view/Login';
 
@@ -19,9 +27,9 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<TestingPage/>} />
-      <Route path="/two" element={<TestingPageTwo/>} />
-      <Route path="/home" element={<HomePage/>} />
+      {/* <Route path="/two" element={<TestingPageTwo/>} /> */}
+      {/* <Route path="/home" element={<HomePage/>} /> */}
+      <Route path="/" element={<HomePage/>} />
 
       <Route path="/buku" element={<BukuPage/>} />
       <Route path="/buku/tambah" element={<TambahBukuPage/>} />
@@ -29,7 +37,15 @@ function App() {
       <Route path="/buku/detail/:id" element={<DetailBukuPage/>} />
       
       <Route path="/anggota" element={<AnggotaPage/>} />
+      <Route path="/anggota/tambah" element={<TambahAnggotaPage/>} />
+      <Route path="/anggota/edit/:id" element={<EditAnggotaPage/>} />
+      <Route path="/anggota/detail/:id" element={<DetailAnggotaPage/>} />
+
+
       <Route path="/peminjaman" element={<PeminjamanPage/>} />
+      <Route path="/peminjaman/tambah" element={<TambahPeminjamanPage/>} />
+      <Route path="/peminjaman/detail/:id" element={<DetailPeminjamanPage/>} />
+
       <Route path="/denda" element={<DendaPage/>} />
       <Route path="/login" element={<LoginPage/>} />
     </Routes>

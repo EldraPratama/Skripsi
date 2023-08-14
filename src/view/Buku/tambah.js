@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import MerchantLayout from "../Layout/MerchantLayout";
 import styles from "../Layout/styles";
 import { useNavigate } from "react-router-dom";
@@ -43,7 +43,6 @@ const TambahBukuPage = () => {
       console.error('Error add data', error);
     });
   }
-
 
 
   return (

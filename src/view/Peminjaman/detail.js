@@ -13,11 +13,26 @@ import {
 
 import QRCode from 'qrcode.react';
 
+import { QrReader } from 'react-qr-reader';
 
-const DetailBukuPage = () => {
+
+
+const DetailAnggotaPage = () => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
-  const { id } = useParams()
+  const { id } = useParams();
+  
+  const [openScanBuku, setOpenScanBuku] = useState(false);
+  const [result, setResult] = useState('No result');
+  const [hasil, setHasil] = useState('No result');
+
+  const handleDownloadQR = () => {
+    const qrCodeCanvas = document.querySelector('canvas');
+    const downloadLink = document.createElement('a');
+    downloadLink.href = qrCodeCanvas.toDataURL();
+    downloadLink.download = `qrcode-${data.nama}.png`;
+    downloadLink.click();
+  };
 
 
   useEffect(() => {
@@ -27,35 +42,27 @@ const DetailBukuPage = () => {
 
   const handleGetBuku = () => {
     // Memanggil endpoint di server backend untuk mendapatkan data
-    axios.get(`http://localhost:5000/api/buku/${id}`)
+    axios.get(`http://localhost:5000/api/peminjaman/${id}`)
       .then((response) => {
         setData(response.data);
       })
       .catch((error) => {
         console.error('Error fetching data', error);
       });
-  }
-
-  const handleDownloadQR = () => {
-    const qrCodeCanvas = document.querySelector('canvas');
-    const downloadLink = document.createElement('a');
-    downloadLink.href = qrCodeCanvas.toDataURL();
-    downloadLink.download = `qrcode-${data.judul}.png`;
-    downloadLink.click();
   };
 
   return (
     <MerchantLayout>
       <Box sx={styles.boxStyled}>
-        <h3>Detail Data Buku</h3>
+        <h3>Detail Data Peminjaman</h3>
         <Stack direction="column" justifyContent={"center"} alignItems={"center"} marginTop={"30px"}>
           <Grid container>
             <Grid item xs={7}>
               <TextField
                 id="outlined-basic" 
                 variant="outlined"
-                value={data.kode_buku}
-                label="Kode Buku"
+                value={data.no_induk}
+                label="Nomer Induk"
                 InputLabelProps={{ shrink: true }}
                 sx={{
                   width:"500px",
@@ -65,8 +72,8 @@ const DetailBukuPage = () => {
               <TextField
                 id="outlined-basic" 
                 variant="outlined"
-                value={data.judul}
-                label="Judul Buku"
+                value={data.nama}
+                label="Nama Anggota"
                 InputLabelProps={{ shrink: true }}
                 sx={{
                   width:"500px",
@@ -76,8 +83,8 @@ const DetailBukuPage = () => {
               <TextField
                 id="outlined-basic" 
                 variant="outlined"
-                value={data.penulis}
-                label="Penulis Buku"
+                value={data.no_hp}
+                label="Nomer Handphone"
                 InputLabelProps={{ shrink: true }}
                 sx={{
                   width:"500px",
@@ -87,41 +94,8 @@ const DetailBukuPage = () => {
               <TextField
                 id="outlined-basic" 
                 variant="outlined"
-                value={data.penerbit}
-                label="Penerbit Buku"
-                InputLabelProps={{ shrink: true }}
-                sx={{
-                  width:"500px",
-                  margin:"10px",
-                }}
-              />
-              <TextField
-                id="outlined-basic" 
-                variant="outlined"
-                value={data.tahun_terbit}
-                label="Tahun Terbit"
-                InputLabelProps={{ shrink: true }}
-                sx={{
-                  width:"500px",
-                  margin:"10px",
-                }}
-              />
-              <TextField
-                id="outlined-basic" 
-                variant="outlined"
-                value={data.harga_buku}
-                label="Harga Buku"
-                InputLabelProps={{ shrink: true }}
-                sx={{
-                  width:"500px",
-                  margin:"10px",
-                }}
-              />
-              <TextField
-                id="outlined-basic" 
-                variant="outlined"
-                value={data.stok_buku}
-                label="Stok Buku"
+                value={data.alamat}
+                label="Alamat Anggota"
                 InputLabelProps={{ shrink: true }}
                 sx={{
                   width:"500px",
@@ -131,9 +105,10 @@ const DetailBukuPage = () => {
             </Grid>
             <Grid item xs={5}>
               <QRCode 
-                value={data.kode_buku} 
+                value={data.no_induk} 
                 size={300}
               />
+
               <Button
                 variant={"contained"}
                 color="primary"
@@ -147,10 +122,52 @@ const DetailBukuPage = () => {
                 variant={"contained"}
                 color="primary"
                 style={{ fontWeight: "bold", width: "300px" , marginTop: "10px" }}
-                onClick={() => navigate("/buku")}
+                onClick={() => navigate("/anggota")}
               >
                 Kembali
               </Button>
+              <Button
+                variant={"contained"}
+                color="primary"
+                style={{ fontWeight: "bold", width: "300px" , marginTop: "10px" }}
+                onClick={() => setOpenScanBuku(!openScanBuku)}
+              >
+                { openScanBuku ? "Tutup Scan" : "Scan Buku" }
+              </Button>
+              <Button
+                variant={"contained"}
+                color="primary"
+                style={{ fontWeight: "bold", width: "300px" , marginTop: "10px" }}
+                onClick={() => setResult("")}
+              >
+                Reset
+              </Button>
+              { openScanBuku && (
+                <>
+                  <QrReader
+                    onResult={(result, error) => {
+                      if (result) {
+                        setResult(result?.text);
+                        setOpenScanBuku(false)
+                      }
+                    }}
+                    style={{ width: '100%' }}
+                  />
+                  <p>{result}</p>
+                </>
+              )}
+                  <QrReader
+                    onResult={(result, error) => {
+                      if (!!result) {
+                        setHasil(result?.text);
+                        setOpenScanBuku(false)
+                      }
+                    }}
+                    style={{ width: '100%' }}
+                  />
+                  <p>{hasil}</p>
+                {/* </>
+              )} */}
             </Grid>
           </Grid>
         </Stack>
@@ -159,4 +176,4 @@ const DetailBukuPage = () => {
   );
 }
 
-export default DetailBukuPage;
+export default DetailAnggotaPage;

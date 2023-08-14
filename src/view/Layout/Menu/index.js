@@ -10,13 +10,8 @@ import {
 
 const features = [
   {
-    text: "Beranda",
-    path: "/",
-    type: "item",
-  },
-  {
     text: "Home",
-    path: "/home",
+    path: "/",
     type: "item",
     icon: <Home/>,
   },
