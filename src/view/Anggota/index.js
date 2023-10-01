@@ -3,6 +3,7 @@ import MerchantLayout from "../Layout/MerchantLayout";
 import styles from "../Layout/styles";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import {
   Box,
   Button,
@@ -15,7 +16,8 @@ import {
   TableContainer, 
   TableHead, 
   TablePagination, 
-  TableRow 
+  TableRow,
+  TextField 
 } from "@mui/material"; 
 
 import {
@@ -24,9 +26,16 @@ import {
   Delete,
 } from '@mui/icons-material';
 
+import Confirmation from "../Component/confirmation.tsx"
+
+
 const AnggotaPage = () => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [konfirmasiHapus, setKonfirmasiHapus] = useState(false);
+  const [idAnggota, setIdAnggota] = useState("");
+
 
   const columns = [
     { id: 'No', label: 'No', minWidth: 50 },
@@ -52,11 +61,12 @@ const AnggotaPage = () => {
 
   useEffect(() => {
     handleGetAnggota()
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   const handleGetAnggota = () => {
     // Memanggil endpoint di server backend untuk mendapatkan data
-    axios.get('http://localhost:5000/api/anggota')
+    axios.get(`http://localhost:5000/api/anggota?search=${search}`)
     .then((response) => {
       setData(response.data);
     })
@@ -69,6 +79,7 @@ const AnggotaPage = () => {
   const handleDeleteAnggota = (id) => {
     axios.delete(`http://localhost:5000/api/anggota/${id}`)
       .then((response) => {
+        toast.success("Berhasil menghapus Anggota")
         handleGetAnggota()
       })
       .catch((error) => {
@@ -78,9 +89,30 @@ const AnggotaPage = () => {
 
   return (
     <MerchantLayout>
+      <ToastContainer />
+      <Confirmation
+        title="Konfirmasi"
+        titleStyle={{ fontWeight: "bold" }}
+        description="Yakin mau menghapus anggota?"
+        open={konfirmasiHapus}
+        handleClose={() => setKonfirmasiHapus(false)}
+        handleConfirm={() => { 
+          handleDeleteAnggota(idAnggota)
+          setKonfirmasiHapus(false)
+        }}
+      />
       <Box sx={styles.boxStyled}>
+        <h3>Data Anggota</h3>
         <Stack direction={"row"} justifyContent={"space-between"} marginBottom={2}>
-          <h3>Data Anggota</h3>
+          <TextField 
+            label="Cari"
+            size="small"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              width:"250px",marginTop:"20px"
+            }}
+          />
           <Button
             variant={"contained"}
             color="primary"
@@ -142,7 +174,10 @@ const AnggotaPage = () => {
                           </IconButton>                      
                           <IconButton 
                             color="error"
-                            onClick={() => handleDeleteAnggota(row.id)}
+                            onClick={() => {
+                              setIdAnggota(row.id)
+                              setKonfirmasiHapus(true)
+                            }}
                           >
                             <Delete/>
                           </IconButton>                      
@@ -150,6 +185,13 @@ const AnggotaPage = () => {
                       </TableRow>
                     );
                   })}
+                {data.length === 0 && 
+                  <TableRow>
+                    <TableCell align="center" colSpan={columns.length}>
+                      <b>Data Tidak ditemukan</b>
+                    </TableCell>
+                  </TableRow>
+                }
               </TableBody>
             </Table>
           </TableContainer>

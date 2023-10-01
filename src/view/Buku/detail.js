@@ -128,6 +128,39 @@ const DetailBukuPage = () => {
                   margin:"10px",
                 }}
               />
+              <TextField
+                id="outlined-basic" 
+                variant="outlined"
+                value={data.kategori}
+                label="Kategori"
+                InputLabelProps={{ shrink: true }}
+                sx={{
+                  width:"500px",
+                  margin:"10px",
+                }}
+              />
+              <TextField
+                id="outlined-basic" 
+                variant="outlined"
+                value={data.rak_buku}
+                label="Rak Buku"
+                InputLabelProps={{ shrink: true }}
+                sx={{
+                  width:"500px",
+                  margin:"10px",
+                }}
+              />
+              <TextField
+                id="outlined-basic" 
+                variant="outlined"
+                value={data.edisi}
+                label="Edisi"
+                InputLabelProps={{ shrink: true }}
+                sx={{
+                  width:"500px",
+                  margin:"10px",
+                }}
+              />
             </Grid>
             <Grid item xs={5}>
               <QRCode 

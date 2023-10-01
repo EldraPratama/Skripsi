@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import MerchantLayout from "../Layout/MerchantLayout";
 import styles from "../Layout/styles";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 import axios from 'axios';
@@ -21,7 +22,28 @@ const TambahBukuPage = () => {
   const [tahun_terbit, setTahun_terbit] = useState(0);
   const [harga_buku, setHarga_buku] = useState(0);
   const [stok_buku, setStok_buku] = useState(0);
+  const [kategori, setKategori] = useState("");
+  const [rak_buku, setRak_buku] = useState("");
+  const [edisi, setEdisi] = useState("");
 
+
+  const canAddBuku = () => {
+    if( kode_buku === "" || 
+      judul === "" || 
+      penulis === "" || 
+      penerbit === "" || 
+      tahun_terbit === 0 || 
+      harga_buku === 0 || 
+      stok_buku === 0 ||
+      kategori === "" ||
+      rak_buku === "" ||
+      edisi === "" 
+    ){
+      toast.warning("Silahkan lengkapi dulu data")
+      return false
+    }
+    return true
+  }
 
   const handleAddBuku = () => {
     let body = {
@@ -32,14 +54,20 @@ const TambahBukuPage = () => {
       tahun_terbit: Number(tahun_terbit),
       harga_buku: Number(harga_buku),
       stok_buku: Number(stok_buku),
+      kategori: kategori,
+      rak_buku: rak_buku,
+      edisi: edisi,
     }
 
     axios.post('http://localhost:5000/api/buku', body)
     .then((response) => {
-      console.log("sukses")
-      navigate("/buku")
+      toast.success("Berhasil menambah Buku")
+      setTimeout(() => {
+        navigate("/buku")
+      }, 1500);
     })
     .catch((error) => {
+      toast.error("Gagal Menambah Buku, check lagi data")
       console.error('Error add data', error);
     });
   }
@@ -51,8 +79,6 @@ const TambahBukuPage = () => {
         <h3>Tambah Data Buku</h3>
         <Stack direction="column" justifyContent={"center"} alignItems={"center"} marginTop={"30px"}>
           <TextField 
-            id="outlined-basic" 
-            variant="outlined"
             label="Kode Buku"
             onChange={(e) => setKode_buku(e.target.value)}
             sx={{
@@ -61,8 +87,6 @@ const TambahBukuPage = () => {
             }}
           />
           <TextField 
-            id="outlined-basic" 
-            variant="outlined"
             label="Judul Buku"
             onChange={(e) => setJudul(e.target.value)}
             sx={{
@@ -71,8 +95,6 @@ const TambahBukuPage = () => {
             }}
           />
           <TextField 
-            id="outlined-basic" 
-            variant="outlined"
             label="Penulis Buku"
             onChange={(e) => setPenulis(e.target.value)}
             sx={{
@@ -81,8 +103,6 @@ const TambahBukuPage = () => {
             }}
           />
           <TextField 
-            id="outlined-basic" 
-            variant="outlined"
             label="Penerbit Buku"
             onChange={(e) => setPenerbit(e.target.value)}
             sx={{
@@ -91,8 +111,6 @@ const TambahBukuPage = () => {
             }}
           />
           <TextField 
-            id="outlined-basic" 
-            variant="outlined"
             label="Tahun Terbit"
             onChange={(e) => setTahun_terbit(e.target.value)}
             sx={{
@@ -101,8 +119,6 @@ const TambahBukuPage = () => {
             }}
           />
           <TextField 
-            id="outlined-basic" 
-            variant="outlined"
             label="Harga Buku"
             onChange={(e) => setHarga_buku(e.target.value)}
             sx={{
@@ -111,10 +127,32 @@ const TambahBukuPage = () => {
             }}
           />
           <TextField 
-            id="outlined-basic" 
-            variant="outlined"
             label="Stok Buku"
             onChange={(e) => setStok_buku(e.target.value)}
+            sx={{
+              width:"450px",
+              margin:"10px",
+            }}
+          />
+          <TextField 
+            label="Kategori Buku"
+            onChange={(e) => setKategori(e.target.value)}
+            sx={{
+              width:"450px",
+              margin:"10px",
+            }}
+          />
+          <TextField 
+            label="Rak Buku"
+            onChange={(e) => setRak_buku(e.target.value)}
+            sx={{
+              width:"450px",
+              margin:"10px",
+            }}
+          />
+          <TextField 
+            label="Edisi"
+            onChange={(e) => setEdisi(e.target.value)}
             sx={{
               width:"450px",
               margin:"10px",
@@ -133,7 +171,7 @@ const TambahBukuPage = () => {
               variant={"contained"}
               color="success"
               style={{ fontWeight: "bold" }}
-              onClick={() => handleAddBuku()}
+              onClick={() => canAddBuku() ? handleAddBuku() : null}
             >
               Tambah
             </Button>

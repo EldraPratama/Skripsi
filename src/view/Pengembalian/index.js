@@ -27,24 +27,28 @@ import {
   Delete,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
+import { QrReader } from 'react-qr-reader';
 
 
-
-const PeminjamanPage = () => {
+const PengembalianPage = () => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [konfirmasiHapus, setKonfirmasiHapus] = useState(false);
   const [idPeminjaman, setIdPeminjaman] = useState("");
+  const [no_induk, setNo_induk] = useState("");
+  const [denda, setDenda] = useState(0);
+  const [max_pinjam, setMax_pinjam] = useState(0);
+
 
   const columns = [
     { id: 'No', label: 'No', minWidth: 10 },
     { id: 'Judul buku', label: 'Judul Buku', minWidth: 100 },
     { id: 'Nama', label: 'Nama Peminjam', minWidth: 100 },
     { id: 'tgl Pinjam', label: 'Tgl Pinjam', minWidth: 30 },
-    { id: 'status', label: 'Status', minWidth: 50 },
+    { id: 'status', label: 'Status Peminjaman', minWidth: 50 },
+    { id: 'denda', label: 'Denda', minWidth: 100 },
     { id: 'proses', label: 'Proses', minWidth: 100 },
-    { id: 'Aksi', label: 'Aksi', minWidth: 100 },
   ];
 
 
@@ -60,14 +64,51 @@ const PeminjamanPage = () => {
     setPage(0);
   };
 
+
+  useEffect(() => {
+    handleGetPengaturan()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     handleGetPeminjaman()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+  }, [no_induk]);
 
+  const cekKeterlambatanPengembalian = (tgl) => {
+    const hari_pinjam = new Date(tgl)
+    const hari_ini = new Date()
+    const selisihMilidetik = hari_ini - hari_pinjam 
+    console.log(selisihMilidetik)
+    const selisihHari = selisihMilidetik / (1000 * 60 * 60 * 24) 
+    const hitungHariTerlambat = selisihHari - max_pinjam
+    console.log(hitungHariTerlambat)
+    
+    if(selisihHari - max_pinjam === 0){
+      console.log("Hari Ini ")
+    }else if(selisihHari - max_pinjam < 0){
+      console.log(`Tersisa ${selisihHari - max_pinjam} hari`)
+    }else if(selisihHari - max_pinjam > 0){
+      console.log(`Telat ${selisihHari - max_pinjam} hari`)
+    }
+  };
+
+
+  // Memanggil endpoint di server backend untuk mendapatkan data peminjaman
+  const handleGetPengaturan = () => {
+    axios.get(`http://localhost:5000/api/pengaturan`)
+    .then((response) => {
+      setDenda(response.data[0].denda);
+      setMax_pinjam(response.data[0].max_pinjam);
+    })
+    .catch((error) => {
+      console.error('Error fetching data', error);
+    });
+  }
+
+  // Memanggil endpoint di server backend untuk mendapatkan data peminjaman
   const handleGetPeminjaman = () => {
-    // Memanggil endpoint di server backend untuk mendapatkan data
-    axios.get(`http://localhost:5000/api/peminjaman?search=${search}`)
+    axios.get(`http://localhost:5000/api/peminjaman/${no_induk}`)
     .then((response) => {
       setData(response.data);
     })
@@ -105,6 +146,7 @@ const PeminjamanPage = () => {
       });
   }
 
+  console.log(`${denda} perhari mulai ${max_pinjam}`)
   return (
     <MerchantLayout>
       <ToastContainer />
@@ -120,26 +162,17 @@ const PeminjamanPage = () => {
         }}
       />
       <Box sx={styles.boxStyled}>
-        <h3>Data Peminjaman</h3>
-        <Stack direction={"row"} justifyContent={"space-between"} marginBottom={2}>
-          <TextField 
-            label="Cari"
-            size="small"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            sx={{
-              width:"250px",marginTop:"20px"
+        <h3>Pengembalian</h3>
+        <Box width="20%" marginLeft="40%" marginTop="-20px">
+          <QrReader
+            onResult={(result, error) => {
+              if (!!result) {
+                setNo_induk(result.text)
+              }
             }}
+            style={{ width: '100%'}}
           />
-          <Button
-            variant={"contained"}
-            color="primary"
-            style={{ fontWeight: "bold", borderRadius:"25px", marginTop:"30px" }}
-            onClick={() => navigate("/peminjaman/tambah")}
-          >
-            Tambah
-          </Button>
-        </Stack>
+        </Box>
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
           <TableContainer sx={{ maxHeight: 440 }}>
             <Table stickyHeader aria-label="sticky table">
@@ -184,23 +217,21 @@ const PeminjamanPage = () => {
                               : "error"
                              }/>
                         </TableCell>
+                        <TableCell align="center" onClick={() => cekKeterlambatanPengembalian(row.tgl_pinjam) }>
+                          {row.denda}
+                        </TableCell>
                         <TableCell align="center">
                           { row.status === "Dipinjam" && (
                             <Chip label="Kembalikan" color="success" size="small" variant="outlined" 
                               onClick={() => handleUpdateStatus(row.id, "Dikembalikan")}
                             />
                           )}
-                          <Chip label="Denda" color="error" size="small" variant="outlined" 
+                          {/* <Chip label="Denda" color="error" size="small" variant="outlined" 
                             onClick={() => handleUpdateStatus(row.id, "Didenda")}
-                          />
+                          /> */}
                         </TableCell>
-                        <TableCell align="center">
-                          {/* <IconButton 
-                            color="primary"
-                            onClick={() => navigate(`/peminjaman/detail/${row.id}`)}
-                          >
-                            <ZoomIn/>
-                          </IconButton>                                           */}
+                    
+                        {/* <TableCell align="center">                     
                           <IconButton 
                             color="error"
                             onClick={() => {
@@ -210,7 +241,7 @@ const PeminjamanPage = () => {
                           >
                             <Delete/>
                           </IconButton>                      
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     );
                   })}
@@ -239,4 +270,4 @@ const PeminjamanPage = () => {
   );
 }
 
-export default PeminjamanPage;
+export default PengembalianPage;

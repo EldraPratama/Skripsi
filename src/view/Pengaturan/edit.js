@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MerchantLayout from "../Layout/MerchantLayout";
 import styles from "../Layout/styles";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import axios from 'axios';
@@ -12,29 +12,23 @@ import {
   Button
 } from "@mui/material"; 
 
-const EditAnggotaPage = () => {
+const EditPengaturanPage = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [no_induk, setNo_induk] = useState("");
-  const [nama, setNama] = useState("");
-  const [no_hp, setNo_hp] = useState("");
-  const [alamat, setAlamat] = useState("");
-
+  const [denda, setDenda] = useState(0);
+  const [max_pinjam, setMax_pinjam] = useState(0);
 
   useEffect(() => {
-    handleGetAnggota();
+    handleGetPengaturan();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Memanggil endpoint di server backend untuk mendapatkan data
-  const handleGetAnggota = () => {
-    axios.get(`http://localhost:5000/api/anggota/${id}`)
+  const handleGetPengaturan = () => {
+    axios.get(`http://localhost:5000/api/pengaturan`)
       .then((response) => {
-        const data = response.data
-        setNo_induk(data.no_induk);
-        setNama(data.nama);
-        setNo_hp(data.no_hp);
-        setAlamat(data.alamat);
+        const data = response.data[0]
+        setDenda(data.denda);
+        setMax_pinjam(data.max_pinjam);
       })
       .catch((error) => {
         console.error('Error fetching data', error);
@@ -42,11 +36,9 @@ const EditAnggotaPage = () => {
   }
 
 
-  const canUpdateAnggota = () => {
-    if( no_induk === "" || 
-      nama === "" || 
-      no_hp === "" || 
-      alamat === "" 
+  const canUpdatePengaturan = () => {
+    if( denda === 0 || 
+      max_pinjam === ""
     ){
       toast.warning("Silahkan lengkapi dulu data")
       return false
@@ -54,23 +46,21 @@ const EditAnggotaPage = () => {
     return true
   }
 
-  const handleUpdateAnggota = () => {
+  const handleUpdatePengaturan = () => {
     let body = {
-      no_induk: no_induk,
-      nama: nama,
-      no_hp: no_hp,
-      alamat: alamat,
+      denda: denda,
+      max_pinjam: max_pinjam,
     }
 
-    axios.put(`http://localhost:5000/api/anggota/${id}`, body)
+    axios.put(`http://localhost:5000/api/pengaturan`, body)
     .then((response) => {
-      toast.success("Berhasil mengupdate Anggota")
+      toast.success("Berhasil mengupdate Pengaturan")
       setTimeout(() => {
-        navigate("/anggota")
+        navigate("/pengaturan")
       }, 1500);
     })
     .catch((error) => {
-      toast.error("Gagal Mengupdate Anggota, check lagi data")
+      toast.error("Gagal Mengupdate Pengaturan, check lagi data")
       console.error('Error update data', error);
     });
   }
@@ -80,15 +70,15 @@ const EditAnggotaPage = () => {
   return (
     <MerchantLayout>
       <Box sx={styles.boxStyled}>
-        <h3>Edit Data Anggota</h3>
+        <h3>Pengaturan</h3>
         <Stack direction="column" justifyContent={"center"} alignItems={"center"} marginTop={"30px"}>
           <TextField 
             InputLabelProps={{ shrink: true }}             
             variant="outlined"
-            label="Nomer induk"
-            value={no_induk}
+            label="Jumlah Denda(Per hari)"
+            value={denda}
             type='number'
-            onChange={(e) => setNo_induk(e.target.value)}
+            onChange={(e) => setDenda(e.target.value)}
             sx={{
               width:"450px",
               margin:"5px 10px",
@@ -97,32 +87,9 @@ const EditAnggotaPage = () => {
           <TextField 
             InputLabelProps={{ shrink: true }}             
             variant="outlined"
-            label="Nama Anggota"
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
-            sx={{
-              width:"450px",
-              margin:"10px",
-            }}
-          />
-          <TextField 
-            InputLabelProps={{ shrink: true }}             
-            variant="outlined"
-            label="Nomer Handphone"
-            value={no_hp}
-            type='number'
-            onChange={(e) => setNo_hp(e.target.value)}
-            sx={{
-              width:"450px",
-              margin:"10px",
-            }}
-          />
-          <TextField 
-            InputLabelProps={{ shrink: true }}             
-            variant="outlined"
-            label="Alamat"
-            value={alamat}
-            onChange={(e) => setAlamat(e.target.value)}
+            label="Maksimal Peminjaman(hari)"
+            value={max_pinjam}
+            onChange={(e) => setMax_pinjam(e.target.value)}
             sx={{
               width:"450px",
               margin:"10px",
@@ -141,7 +108,7 @@ const EditAnggotaPage = () => {
               variant={"contained"}
               color="success"
               style={{ fontWeight: "bold" }}
-              onClick={() => canUpdateAnggota() ? handleUpdateAnggota() : null}
+              onClick={() => canUpdatePengaturan() ? handleUpdatePengaturan() : null}
             >
               Update
             </Button>
@@ -152,4 +119,4 @@ const EditAnggotaPage = () => {
   );
 }
 
-export default EditAnggotaPage;
+export default EditPengaturanPage;

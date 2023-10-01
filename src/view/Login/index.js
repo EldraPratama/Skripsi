@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-// import MainLayout from "components/Layouts/MainLayout";
+import { useState } from "react";
 import { 
   Grid, 
   Stack, 
@@ -8,50 +7,58 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-// import { Button } from "components/styled/button.styled";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
  
-// import LoginCover from "assets/media/images/login-cover.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   const LoginCover = `${process.env.PUBLIC_URL}/perpustakaan.jpeg`
-  // const {
-  //   thunkDispatch,
-  //   storeState: { Auth },
-  // } = useRedux();
-  // //const [isLoginFailed, setIsLoginFailed] = useState(false);
-  // const [isSubmitted, setIsSubmitted] = useState(false);
-  // const [credentials, setCredentials] = useState({
-  //   username: "",
-  //   password: "",
-  // });
 
-  // useEffect(() => {
-  //   if (Auth?.data?.data?.isAuthenticated) {
-  //     navigate("/");
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [Auth]);
 
-  // const handleLogin = (e) => {
-  //   setIsSubmitted(true);
-  //   e.preventDefault();
-  //   thunkDispatch(AuthLogin(credentials))
-  //     .unwrap()
-  //     .then((res) => {
-  //       if (res && res.status === "error") {
-  //         //setIsLoginFailed(true);
-  //         toast.error("Login gagal!");
-  //       } else {
-  //         //setIsLoginFailed(false);
-  //         toast.success("Login berhasil");
-  //       }
-  //     });
-  // };
+  const checkLogout = sessionStorage.getItem('nama');
+  if (checkLogout) { 
+    toast.success("Berhasil Logout");
+    sessionStorage.clear();
+  } else {
+    sessionStorage.clear();
+  }
+
+  const canLogin = () => {
+    if(username === "" || password === ""){
+      toast.warning("Silahkan lengkapi Username atau Password")
+      return false
+    }
+    return true
+  }
+
+  const handleLogin = () => {
+    let body = {
+      username: username,
+      password: password,
+    }
+
+    axios.post('http://localhost:5000/api/login', body)
+    .then((response) => {
+      sessionStorage.setItem('nama', response.data[0].name)
+      // console.log(response.data)
+      // console.log(response.data[0].name)
+      toast.success("Login Berhasil");
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    })
+    .catch((error) => {
+      console.error('Error fetching data', error);
+      toast.error("Check ulang username atau password");
+    });
+  }
 
   return (
     // <MainLayout>
@@ -91,61 +98,27 @@ const Login = () => {
                     Login
                   </Typography>
 
-                  <form onSubmit={console.log("")}>
                     <Stack direction={"column"}>
                       <TextField 
-                        id="outlined-basic" 
                         label="Username" 
-                        variant="outlined" 
+                        value={username}
+                        onChange={(e)=> setUsername(e.target.value)}
                       />
                       <TextField 
-                        id="outlined-basic" 
                         label="Password" 
-                        variant="outlined" 
                         type="password"
+                        value={password}
+                        onChange={(e)=> setPassword(e.target.value)}
                         style={{
                           marginTop:"20px",
                           marginBottom:"20px",
                         }}
                       />
-
-                      {/* <TextField
-                        value={credentials.username}
-                        validationType={isSubmitted ? "ERROR" : ""}
-                        validationText={
-                          isSubmitted
-                            ? credentials.username === ""
-                              ? "Silahkan masukan username anda"
-                              : ""
-                            : ""
-                        }
-                        type={"text"}
-                        onChange={(e) =>
-                          setCredentials({
-                            ...credentials,
-                            username: e.target.value,
-                          })
-                        }
-                        placeholder={"Username"}
-                      ></TextField>
-                      <TextField
-                        isRequired
-                        type={"password"}
-                        minLength={8}
-                        value={credentials.password}
-                        onChange={(e) =>
-                          setCredentials({
-                            ...credentials,
-                            password: e.target.value,
-                          })
-                        }
-                        placeholder={"Kata sandi"}
-                      ></TextField> */}
                     </Stack>
                     <Stack
                       direction={"row"}
                       justifyContent={"flex-end"}
-                      alignItems={"center"}
+                      // alignItems={"center"}
                       marginTop={1}
                     >
                       <Button
@@ -153,12 +126,11 @@ const Login = () => {
                         variant={"contained"}
                         color="success"
                         style={{ fontWeight: "bold" }}
+                        onClick={() => canLogin() ? handleLogin() : null }
                       >
                         Masuk
                       </Button>
                     </Stack>
-                  </form>
-
                 </Box>
               </Stack>
             </BoxRight>

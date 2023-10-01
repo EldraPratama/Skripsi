@@ -1,49 +1,38 @@
 import React, { useState } from "react";
-
-//import { NormalText } from "src/components/styled/text.styled";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { 
   Menu,
   PowerSettingsNew 
 } from '@mui/icons-material';
+import { useNavigate } from "react-router-dom";
 import { HeaderContainer } from "./header.styles";
-// import NotificationSection from "./Notification";
-// import { faPowerOff } from "@fortawesome/free-solid-svg-icons";
-// import ConfirmationModal from "components/Modal/confirmation";
-//import styled from "styled-components";
-// import "asset/css/adminlte.css";
-// import useRedux from "redux/useRedux";
-// import { AuthLogout } from "redux/auth";
-import { IconButton } from "@mui/material";
+import { IconButton, Box } from "@mui/material";
+import Confirmation from "../../Component/confirmation.tsx"
 
-// export interface HeaderProps {
-//   open?: Boolean;
-//   onHamburgerClick?: any;
-// }
+
 
 const Header = ({ open, onHamburgerClick }) => {
-  // const {
-  //   thunkDispatch,
-  //   storeState: { Auth, Notification },
-  // } = useRedux();
-  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  // const handleLogout = () => {
-  //   setTimeout(() => {
-  //     thunkDispatch(AuthLogout())
-  //       .unwrap()
-  //       .then(() => {
-  //         setConfirmOpen(false);
-  //       });
-  //   }, 3000);
-  // };
+  const namaPetugas = sessionStorage.getItem('nama');
+  const [konfirmasiLogout, setKonfirmasiLogout] = useState(false);
+  const navigate = useNavigate();
+
 
   return (
     <HeaderContainer
       open={open}
       className={`main-header navbar navbar-expand navbar-white navbar-light`}
     >
+      <Confirmation
+        title="Konfirmasi"
+        titleStyle={{ fontWeight: "bold" }}
+        description="Yakin mau Logout?"
+        open={konfirmasiLogout}
+        handleClose={() => setKonfirmasiLogout(false)}
+        handleConfirm={() => { 
+          setKonfirmasiLogout(false)
+          navigate("/login")
+        }}
+      />
       <ul className="navbar-nav">
         <li className="nav-item" onClick={onHamburgerClick}>
           <IconButton>
@@ -77,58 +66,23 @@ const Header = ({ open, onHamburgerClick }) => {
             </form>
           </div>
         </li>
-        {/* <List className="nav-item">
-          <a className="nav-link" href="/#0">
-            <NormalText color={"rgba(0, 0, 0, 0.5)"} isPressable>
-              Merchant Guide
-            </NormalText>
-          </a>
-        </List> */}
-        {/* <List className="nav-item">
-          <a className="nav-link" href="/#0">
-            <NormalText color={"rgba(0, 0, 0, 0.5)"} isPressable>
-              Contact CS
-            </NormalText>
-          </a>
-        </List> */}
 
-        {/* <li className="nav-item">
-          <NotificationSection
-            notifications={Notification.notifications}
-            counter={Notification.notificationCount}
-          />
-        </li> */}
-
+        <li className="nav-item nav-item mt-2 mr-3">
+          Hallo, {namaPetugas}
+        </li>
         <li className="nav-item">
-          <a
+          <Box
             className="nav-link"
-            onClick={() => setConfirmOpen(!confirmOpen)}
+            onClick={() => setKonfirmasiLogout(true)}
             style={{ cursor: "pointer" }}
-            href="#0"
           >
             <PowerSettingsNew/>
-          </a>
+          </Box>
         </li>
       </ul>
-
-      {/* Modal Logout */}
-      {/* <ConfirmationModal
-        title="Confirmation"
-        titleStyle={{ fontWeight: "bold" }}
-        description="Are you sure want to end your session?"
-        open={confirmOpen}
-        handleClose={() => setConfirmOpen(!confirmOpen)}
-        handleConfirm={() => handleLogout()}
-      ></ConfirmationModal> */}
     </HeaderContainer>
   );
 };
 
-// const List = styled.li`
-//   transition: ease-in-out 0.3s;
-//   @media only screen and (max-width: 768px) {
-//     display: none;
-//   }
-// `;
 
 export default Header;

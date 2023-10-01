@@ -3,6 +3,7 @@ import MerchantLayout from "../Layout/MerchantLayout";
 import styles from "../Layout/styles";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { ToastContainer,toast } from "react-toastify";
 import {
   Box,
   Button,
@@ -15,7 +16,8 @@ import {
   TableContainer, 
   TableHead, 
   TablePagination, 
-  TableRow 
+  TableRow,
+  TextField 
 } from "@mui/material"; 
 
 import {
@@ -24,21 +26,27 @@ import {
   Delete,
 } from '@mui/icons-material';
 
+import Confirmation from "../Component/confirmation.tsx"
+
 
 const BukuPage = () => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [konfirmasiHapus, setKonfirmasiHapus] = useState(false);
+  const [idBuku, setIdBuku] = useState("");
 
   useEffect(() => {
     handleGetBuku()
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   const columns = [
     { id: 'No', label: 'No', minWidth: 50 },
     { id: 'Judul', label: 'Judul', minWidth: 200 },
     { id: 'Penulis', label: 'Penulis', minWidth: 100 },
     { id: 'Kode', label: 'Kode Buku', minWidth: 100 },
-    { id: 'Stok Buku', label: 'Stok Buku', minWidth: 100 },
+    { id: 'Penerbit', label: 'Penerbit', minWidth: 100 },
     { id: 'Aksi', label: 'Aksi', minWidth: 150 },
   ];
 
@@ -57,7 +65,7 @@ const BukuPage = () => {
 
   // Memanggil endpoint di server backend untuk mendapatkan data
   const handleGetBuku = () => {
-    axios.get('http://localhost:5000/api/buku')
+    axios.get(`http://localhost:5000/api/buku?search=${search}`)
       .then((response) => {
         setData(response.data);
       })
@@ -70,6 +78,7 @@ const BukuPage = () => {
   const handleDeleteBuku = (id) => {
     axios.delete(`http://localhost:5000/api/buku/${id}`)
       .then((response) => {
+        toast.success("Berhasil menghapus Buku")
         handleGetBuku()
       })
       .catch((error) => {
@@ -79,13 +88,34 @@ const BukuPage = () => {
   
   return (
     <MerchantLayout>
+      <ToastContainer />
+      <Confirmation
+        title="Konfirmasi"
+        titleStyle={{ fontWeight: "bold" }}
+        description="Yakin mau menghapus buku?"
+        open={konfirmasiHapus}
+        handleClose={() => setKonfirmasiHapus(false)}
+        handleConfirm={() => { 
+          handleDeleteBuku(idBuku)
+          setKonfirmasiHapus(false)
+        }}
+      />
       <Box sx={styles.boxStyled}>
+        <h2>Data Buku</h2>
         <Stack direction={"row"} justifyContent={"space-between"} marginBottom={2}>
-          <h2>Data Buku</h2>
+          <TextField 
+            label="Cari"
+            size="small"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              width:"250px",marginTop:"20px"
+            }}
+          />
           <Button
             variant={"contained"}
             color="primary"
-            style={{ fontWeight: "bold", borderRadius:"25px", marginTop:"30px" }}
+            style={{ fontWeight: "bold", borderRadius:"25px", marginTop:"20px" }}
             onClick={() => navigate("/buku/tambah")}
           >
             Tambah
@@ -126,7 +156,7 @@ const BukuPage = () => {
                           {row.kode_buku}
                         </TableCell>
                         <TableCell align="center">
-                          {row.stok_buku}
+                          {row.penerbit}
                         </TableCell>
                         <TableCell align="center">
                           <IconButton 
@@ -143,7 +173,10 @@ const BukuPage = () => {
                           </IconButton>                      
                           <IconButton 
                             color="error"
-                            onClick={() => handleDeleteBuku(row.id)}
+                            onClick={() => {
+                              setIdBuku(row.id)
+                              setKonfirmasiHapus(true)
+                            }}
                           >
                             <Delete/>
                           </IconButton>                      
@@ -151,6 +184,13 @@ const BukuPage = () => {
                       </TableRow>
                     );
                   })}
+                {data.length === 0 && 
+                  <TableRow>
+                    <TableCell align="center" colSpan={columns.length}>
+                      <b>Data Tidak ditemukan</b>
+                    </TableCell>
+                  </TableRow>
+                }
               </TableBody>
             </Table>
           </TableContainer>

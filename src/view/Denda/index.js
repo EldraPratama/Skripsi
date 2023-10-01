@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import MerchantLayout from "../Layout/MerchantLayout";
 import styles from "../Layout/styles";
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   Box,
   TextField,
-  Button,
   Chip,
-  IconButton,
   Stack,
   Paper,
   Table, 
@@ -20,10 +19,6 @@ import {
   TableRow 
 } from "@mui/material"; 
 
-import {
-  ZoomIn,
-  Delete,
-} from '@mui/icons-material';
 import { format } from 'date-fns';
 
 
@@ -31,7 +26,8 @@ import { format } from 'date-fns';
 
 const PeminjamanPage = () => {
   const [data, setData] = useState([]);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  const [search, setSearch] = useState("");
 
   const columns = [
     { id: 'No', label: 'No', minWidth: 10 },
@@ -61,28 +57,18 @@ const PeminjamanPage = () => {
 
   useEffect(() => {
     handleGetDenda()
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   const handleGetDenda = () => {
     // Memanggil endpoint di server backend untuk mendapatkan data
-    axios.get('http://localhost:5000/api/denda')
+    axios.get(`http://localhost:5000/api/denda?search=${search}`)
     .then((response) => {
       setData(response.data);
     })
     .catch((error) => {
       console.error('Error fetching data', error);
     });
-  }
-
-  // Memanggil endpoint di server backend untuk menghapus data
-  const handleDeleteDenda = (id) => {
-    axios.delete(`http://localhost:5000/api/denda/${id}`)
-      .then((response) => {
-        handleGetDenda()
-      })
-      .catch((error) => {
-        console.error('Error fetching data', error);
-      });
   }
 
   // Memanggil endpoint di server backend untuk mengupdate data
@@ -94,6 +80,7 @@ const PeminjamanPage = () => {
 
     axios.put(`http://localhost:5000/api/denda/${id}`, body)
       .then((response) => {
+        toast.success("Berhasil mengupdate Data")
         handleGetDenda()
         setSelectedId(0)
         setDenda(0)
@@ -106,8 +93,17 @@ const PeminjamanPage = () => {
   return (
     <MerchantLayout>
       <Box sx={styles.boxStyled}>
+        <h3>Data Denda</h3>
         <Stack direction={"row"} justifyContent={"space-between"} marginBottom={2}>
-          <h3>Data Denda</h3>
+          <TextField 
+            label="Cari"
+            size="small"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              width:"250px",marginTop:"20px"
+            }}
+          />
         </Stack>
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
           <TableContainer sx={{ maxHeight: 440 }}>
@@ -151,7 +147,6 @@ const PeminjamanPage = () => {
                         <TableCell align="center">
                           { selectedId === row.id ? (
                             <TextField 
-                              // InputLabelProps={{ shrink: true }}   
                               size='small'          
                               value={denda}
                               type='number'
@@ -184,6 +179,13 @@ const PeminjamanPage = () => {
                       </TableRow>
                     );
                   })}
+                {data.length === 0 && 
+                  <TableRow>
+                    <TableCell align="center" colSpan={columns.length}>
+                      <b>Data Tidak ditemukan</b>
+                    </TableCell>
+                  </TableRow>
+                }
               </TableBody>
             </Table>
           </TableContainer>

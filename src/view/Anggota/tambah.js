@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import MerchantLayout from "../Layout/MerchantLayout";
 import styles from "../Layout/styles";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 import axios from 'axios';
@@ -19,6 +20,17 @@ const TambahAnggotaPage = () => {
   const [no_hp, setNo_hp] = useState("");
   const [alamat, setAlamat] = useState("");
 
+  const canAddAnggota = () => {
+    if( no_induk === "" || 
+      nama === "" || 
+      no_hp === "" || 
+      alamat === "" 
+    ){
+      toast.warning("Silahkan lengkapi dulu data")
+      return false
+    }
+    return true
+  }
 
   const handleAddAnggota = () => {
     let body = {
@@ -30,10 +42,13 @@ const TambahAnggotaPage = () => {
 
     axios.post('http://localhost:5000/api/anggota', body)
     .then((response) => {
-      console.log("sukses")
-      navigate("/anggota")
+      toast.success("Berhasil menambah Anggota")
+      setTimeout(() => {
+        navigate("/anggota")
+      }, 1500);
     })
     .catch((error) => {
+      toast.error("Gagal Menambah Anggota, check lagi data")
       console.error('Error add data', error);
     });
   }
@@ -100,7 +115,7 @@ const TambahAnggotaPage = () => {
               variant={"contained"}
               color="success"
               style={{ fontWeight: "bold" }}
-              onClick={() => handleAddAnggota()}
+              onClick={() => canAddAnggota() ? handleAddAnggota() : null}
             >
               Tambah
             </Button>

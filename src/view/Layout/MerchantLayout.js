@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect } from "react";
+import { useState } from "react";
 // import Helmet from "react-helmet";
 import Header from "./Header/index";
 import Sidebar from "./Sidebar";
@@ -12,6 +12,12 @@ import { ToastContainer } from "react-toastify";
 const MerchantLayout = ({ children, title }) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const checkLogin = sessionStorage.getItem('nama');
+
+  if(!checkLogin){
+    navigate("/login")
+  }
   // const { width } = useWindowDimensions();
   // const {
   //   thunkDispatch,

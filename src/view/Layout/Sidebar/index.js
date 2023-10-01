@@ -9,11 +9,6 @@ import "../../../asset/css/adminlte.css";
 
 
 const Sidebar = ({ sidebar }) => {
-  // const {
-  //   storeState: { Auth },
-  // } = useRedux();
-
-  // const Merchant = Auth?.data?.data?.merchant ?? "";
 
   return (
     <SidebarContainer

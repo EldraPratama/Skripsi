@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route } from "react-router-dom";
 
-import TestingPage from './view/Testing';
+// import TestingPage from './view/Testing';
 // import TestingPageTwo from './view/Testing/two';
 import HomePage from './view/Home';
 
@@ -20,8 +20,13 @@ import PeminjamanPage from './view/Peminjaman';
 import TambahPeminjamanPage from './view/Peminjaman/tambah';
 import DetailPeminjamanPage from './view/Peminjaman/detail';
 
+import PengembalianPage from './view/Pengembalian';
 import DendaPage from './view/Denda';
+import LaporanPage from './view/Laporan';
+import PengaturanPage from './view/Pengaturan/edit';
 import LoginPage from './view/Login';
+
+import NotFoundPage from './view/NotFound';
 
 function App() {
 
@@ -46,8 +51,13 @@ function App() {
       <Route path="/peminjaman/tambah" element={<TambahPeminjamanPage/>} />
       <Route path="/peminjaman/detail/:id" element={<DetailPeminjamanPage/>} />
 
+      <Route path="/pengembalian" element={<PengembalianPage/>} />
+
       <Route path="/denda" element={<DendaPage/>} />
+      <Route path="/laporan" element={<LaporanPage/>} />
+      <Route path="/pengaturan" element={<PengaturanPage/>} />
       <Route path="/login" element={<LoginPage/>} />
+      <Route path="*" element={<NotFoundPage/>} />
     </Routes>
   );
 }
