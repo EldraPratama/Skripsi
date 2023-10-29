@@ -125,7 +125,7 @@ const PeminjamanPage = () => {
       { header: 'Nama Peminjam', key: 'nama_peminjam', width: 20, style: { font: { bold: true } } },
       { header: 'Judul Buku', key: 'judul_buku', width: 20, style: { font: { bold: true } } },
       { header: 'Tanggal Pinjam', key: 'tgl_pinjam', width: 20, style: { font: { bold: true } } },
-      { header: 'Tanggal Pengembalian', key: 'tgl_pengembalian', width: 20, style: { font: { bold: true } } },
+      // { header: 'Tanggal Pengembalian', key: 'tgl_pengembalian', width: 20, style: { font: { bold: true } } },
       { header: 'Denda', key: 'denda', width: 20, style: { font: { bold: true }, alignment: {horizontal: 'left'} } },
       { header: 'Status', key: 'status', width: 20, style: { font: { bold: true }, alignment: {horizontal: 'left'} } },
     ];
@@ -136,7 +136,7 @@ const PeminjamanPage = () => {
         nama_peminjam: row.nama_peminjam,
         judul_buku: row.judul_buku,
         tgl_pinjam: row.tgl_pinjam.slice(0, 10),
-        tgl_pengembalian: row.tgl_pengembalian.slice(0, 10),
+        tgl_pengembalian: row.tgl_pengembalian ? row.tgl_pengembalian.slice(0, 10) : "-",
         denda: row.denda,
         status: row.status,
       })
@@ -242,7 +242,7 @@ const PeminjamanPage = () => {
                           {format( new Date(row.tgl_pinjam),'dd-MM-yyyy')}
                         </TableCell>
                         <TableCell align="center">
-                          {format( new Date(row.tgl_pengembalian),'dd-MM-yyyy')}
+                          { row.tgl_pengembalian ? format( new Date(row.tgl_pengembalian) ,'dd-MM-yyyy') : '-'}
                         </TableCell>
                         <TableCell align="center">
                           <Chip label={row.tgl_pengembalian ? "Dikembalikan" : "Dipinjam" } 

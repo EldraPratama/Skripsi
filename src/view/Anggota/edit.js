@@ -19,6 +19,7 @@ const EditAnggotaPage = () => {
   const [nama, setNama] = useState("");
   const [no_hp, setNo_hp] = useState("");
   const [alamat, setAlamat] = useState("");
+  const [email, setEmail] = useState("");
 
 
   useEffect(() => {
@@ -35,6 +36,7 @@ const EditAnggotaPage = () => {
         setNama(data.nama);
         setNo_hp(data.no_hp);
         setAlamat(data.alamat);
+        setEmail(data.email);
       })
       .catch((error) => {
         console.error('Error fetching data', error);
@@ -46,7 +48,8 @@ const EditAnggotaPage = () => {
     if( no_induk === "" || 
       nama === "" || 
       no_hp === "" || 
-      alamat === "" 
+      alamat === "" ||
+      email === "" 
     ){
       toast.warning("Silahkan lengkapi dulu data")
       return false
@@ -60,6 +63,7 @@ const EditAnggotaPage = () => {
       nama: nama,
       no_hp: no_hp,
       alamat: alamat,
+      email: email,
     }
 
     axios.put(`http://localhost:5000/api/anggota/${id}`, body)
@@ -123,6 +127,17 @@ const EditAnggotaPage = () => {
             label="Alamat"
             value={alamat}
             onChange={(e) => setAlamat(e.target.value)}
+            sx={{
+              width:"450px",
+              margin:"10px",
+            }}
+          />
+          <TextField 
+            InputLabelProps={{ shrink: true }}             
+            variant="outlined"
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             sx={{
               width:"450px",
               margin:"10px",

@@ -19,11 +19,13 @@ const TambahAnggotaPage = () => {
   const [nama, setNama] = useState("");
   const [no_hp, setNo_hp] = useState("");
   const [alamat, setAlamat] = useState("");
+  const [email, setEmail] = useState("");
 
   const canAddAnggota = () => {
     if( no_induk === "" || 
       nama === "" || 
       no_hp === "" || 
+      alamat === ""||
       alamat === "" 
     ){
       toast.warning("Silahkan lengkapi dulu data")
@@ -38,6 +40,7 @@ const TambahAnggotaPage = () => {
       nama: nama,
       no_hp: no_hp,
       alamat: alamat,
+      email: email,
     }
 
     axios.post('http://localhost:5000/api/anggota', body)
@@ -97,6 +100,16 @@ const TambahAnggotaPage = () => {
             variant="outlined"
             label="Alamat"
             onChange={(e) => setAlamat(e.target.value)}
+            sx={{
+              width:"450px",
+              margin:"10px",
+            }}
+          />
+          <TextField 
+            id="outlined-basic" 
+            variant="outlined"
+            label="Email"
+            onChange={(e) => setEmail(e.target.value)}
             sx={{
               width:"450px",
               margin:"10px",

@@ -42,6 +42,7 @@ const AnggotaPage = () => {
     { id: 'No induk', label: 'Nomer Induk', minWidth: 100 },
     { id: 'Nama', label: 'Nama', minWidth: 100 },
     { id: 'No Hp', label: 'Nomer HP', minWidth: 100 },
+    { id: 'Email', label: 'Email', minWidth: 100 },
     { id: 'Alamat', label: 'Alamat', minWidth: 200 },
     { id: 'Aksi', label: 'Aksi', minWidth: 150 },
   ];
@@ -155,6 +156,9 @@ const AnggotaPage = () => {
                         </TableCell>
                         <TableCell align="center">
                           {row.no_hp}
+                        </TableCell>
+                        <TableCell align="center">
+                          {row.email}
                         </TableCell>
                         <TableCell align="center">
                           {row.alamat}

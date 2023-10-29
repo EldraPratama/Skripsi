@@ -92,6 +92,16 @@ const DetailAnggotaPage = () => {
                   margin:"10px",
                 }}
               />
+              <TextField
+                variant="outlined"
+                value={data.email}
+                label="Email Anggota"
+                InputLabelProps={{ shrink: true }}
+                sx={{
+                  width:"500px",
+                  margin:"10px",
+                }}
+              />
             </Grid>
             <Grid item xs={5}>
               <QRCode 

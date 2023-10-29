@@ -4,10 +4,6 @@ import styles from "../Layout/styles";
 import { useNavigate } from "react-router-dom";
 
 import { QrReader } from 'react-qr-reader';
-
-// import { LocalizationProvider } from '@mui/x-date-pickers';
-// import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { toast } from "react-toastify";
 
 
@@ -23,15 +19,13 @@ import {
 const TambahPeminjamanPage = () => {
   const navigate = useNavigate();
 
-  // const [id_buku, setId_buku] = useState(0);
-  // const [id_anggota, setId_anggota] = useState(0);
   const [judul_buku, setJudul_buku] = useState("");
   const [nama_peminjam, setNama_peminjam] = useState("");
   const [kode_buku, setKode_buku] = useState("");
   const [no_induk, setNo_induk] = useState("");
-  // const [tgl_pinjam, setTgl_pinjam] = useState("");
   // eslint-disable-next-line no-unused-vars
   const [tgl_pengembalian, setTgl_pengembalian] = useState("");
+  const [email, setEmail] = useState("");
 
   // const [openScanBuku, setOpenScanBuku] = useState(false);
   // const [openScanAnggota, setOpenScanAnggota] = useState(false);
@@ -57,7 +51,7 @@ const TambahPeminjamanPage = () => {
   const handleKurangiStok = () => {
     axios.put(`http://localhost:5000/api/buku/kurang/${kode_buku}`)
     .then((response) => {
-      toast.success("Berhasil Menambah Data")
+      // toast.success("Berhasil Menambah Data")
       setTimeout(() => {
         navigate("/peminjaman")
       }, 1500);
@@ -78,6 +72,7 @@ const TambahPeminjamanPage = () => {
       tgl_pengembalian: null,
       status: "Dipinjam",
       denda: 0,      
+      email: email,      
     }
 
 
@@ -120,6 +115,7 @@ const TambahPeminjamanPage = () => {
       // setId_anggota(data.id)
       setNo_induk(data.no_induk)
       setNama_peminjam(data.nama)
+      setEmail(data.email)
       toast.success("Berhasil scan data Anggota")
     })
     .catch((error) => {

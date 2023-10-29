@@ -25,6 +25,8 @@ import Confirmation from "../Component/confirmation.tsx"
 
 import {
   Delete,
+  NotificationsActive,
+  Done
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 
@@ -42,14 +44,16 @@ const PeminjamanPage = () => {
     { id: 'Judul buku', label: 'Judul Buku', minWidth: 100 },
     { id: 'Nama', label: 'Nama Peminjam', minWidth: 100 },
     { id: 'tgl Pinjam', label: 'Tgl Pinjam', minWidth: 30 },
-    { id: 'status', label: 'Status', minWidth: 50 },
-    { id: 'proses', label: 'Proses', minWidth: 100 },
+    { id: 'status', label: 'Status Peminjaman', minWidth: 50 },
+    { id: 'denda', label: 'Denda', minWidth: 100 },
     { id: 'Aksi', label: 'Aksi', minWidth: 100 },
   ];
 
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [denda, setDenda] = useState(0);
+  const [max_pinjam, setMax_pinjam] = useState(0);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -64,6 +68,11 @@ const PeminjamanPage = () => {
     handleGetPeminjaman()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
+
+  useEffect(() => {
+    handleGetPengaturan()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleGetPeminjaman = () => {
     // Memanggil endpoint di server backend untuk mendapatkan data
@@ -88,22 +97,105 @@ const PeminjamanPage = () => {
       });
   }
 
+  // Menambah kembali stok
+  const handleTambahStok = (kode_buku) => {
+    axios.put(`http://localhost:5000/api/buku/tambah/${kode_buku}`)
+    .then((response) => {
+    })
+    .catch((error) => {
+      toast.error("Gagal Menambah Data")
+      console.error('Error add data', error);
+    });
+  }
+
   // Memanggil endpoint di server backend untuk mengupdate data
-  const handleUpdateStatus = (id, status) => {
+  const handleUpdateStatus = (id, status, kode_buku, denda) => {
     let body = {
       status: status,
-      denda: 0,
+      denda: denda,
+      tgl_pengembalian: new Date(),
     }
 
     axios.put(`http://localhost:5000/api/peminjaman/${id}`, body)
       .then((response) => {
+        handleTambahStok(kode_buku)
         handleGetPeminjaman()
-        toast.success("Berhasil mengupdate Data")
+        toast.success("Berhasil mengembalikan Buku")
       })
       .catch((error) => {
         console.error('Error fetching data', error);
       });
   }
+
+  const cekKeterlambatan = (tgl) => {
+    let hari_pinjam = new Date(tgl).setHours(0,0,0,0)
+    let hari_ini = new Date().setHours(0,0,0,0)
+    let selisihMilidetik = hari_ini - hari_pinjam 
+    let selisihHari = selisihMilidetik / (1000 * 60 * 60 * 24) 
+
+    let hitungHariTerlambat = selisihHari - max_pinjam
+
+    return hitungHariTerlambat
+
+  };
+
+  const dendaKeterlambatan = (tgl) => {
+    let terlambat = cekKeterlambatan(tgl)
+    let didenda = 0
+    if(terlambat > 0){
+      didenda = terlambat * denda
+    }
+
+    return didenda
+  }
+
+  const statusPeminjaman = (tgl) => {
+    let peminjaman = cekKeterlambatan(tgl)
+    let status = ""
+    if(peminjaman > 0){
+      status = ` Terlambat ${peminjaman} hari`;
+    }else if(peminjaman === 0){
+      status = `Hari ini terakhir`
+    }else if(peminjaman < 0){
+      status = `Sisa  ${Math.abs(peminjaman)} hari`
+    }else{
+      status = `Dikembalikan`
+    }
+
+    return status
+  }
+
+  const kirimEmail = async (email, peminjam, status, denda) => {
+    // const { to, subject, text } = this.state;
+    let subjek = "Pengingat Pengembalian Buku";
+    let pesan = `Hallo ${peminjam},\n 
+    Peminjaman buku kamu ${status}, pastikan tepat waktu dalam mengembalikan buku, terlambat 1 hari akan didenda ${denda}\n            
+    Terimakasih :)
+    `;
+
+    try {
+      await axios.post(`http://localhost:5000/send-email`, {email, subjek, pesan})
+            .then((response) => {
+              toast.success("Berhasil mengirim pesan")
+            });
+      // await axios.post('/send-email', { to, subject, text });
+      // this.setState({ message: 'Email berhasil terkirim!' });
+    } catch (error) {
+      // this.setState({ message: 'Gagal mengirim email.' });
+    }
+  }
+
+    // Memanggil endpoint di server backend untuk mendapatkan data peminjaman
+    const handleGetPengaturan = () => {
+      axios.get(`http://localhost:5000/api/pengaturan`)
+      .then((response) => {
+        setDenda(response.data[0].denda);
+        setMax_pinjam(response.data[0].max_pinjam);
+      })
+      .catch((error) => {
+        console.error('Error fetching data', error);
+      });
+    }
 
   return (
     <MerchantLayout>
@@ -175,9 +267,15 @@ const PeminjamanPage = () => {
                           {format( new Date(row.tgl_pinjam),'dd-MM-yyyy')}
                         </TableCell>
                         <TableCell align="center">
-                          <Chip label={row.status} 
+                          <Chip label={ row.status === "Dipinjam" 
+                              ? statusPeminjaman(row.tgl_pinjam) 
+                              : row.status
+                            }  
                             size="small"
-                            color={row.status === "Dipinjam" 
+                            color={
+                              cekKeterlambatan(row.tgl_pinjam) >= 0 && row.status === "Dipinjam"
+                              ? "error"
+                              : row.status === "Dipinjam" 
                               ? "primary" 
                               : row.status === "Dikembalikan"
                               ? "success"
@@ -185,22 +283,39 @@ const PeminjamanPage = () => {
                              }/>
                         </TableCell>
                         <TableCell align="center">
-                          { row.status === "Dipinjam" && (
+                          {row.denda ? row.denda : dendaKeterlambatan(row.tgl_pinjam)}
+                          {/* { row.status === "Dipinjam" && (
                             <Chip label="Kembalikan" color="success" size="small" variant="outlined" 
-                              onClick={() => handleUpdateStatus(row.id, "Dikembalikan")}
+                              onClick={() => {
+                                handleUpdateStatus(row.id, "Dikembalikan", row.kode_buku) 
+                              }}
                             />
-                          )}
-                          <Chip label="Denda" color="error" size="small" variant="outlined" 
+                          )} */}
+                          {/* <Chip label="Denda" color="error" size="small" variant="outlined" 
                             onClick={() => handleUpdateStatus(row.id, "Didenda")}
-                          />
+                          /> */}
                         </TableCell>
                         <TableCell align="center">
-                          {/* <IconButton 
-                            color="primary"
-                            onClick={() => navigate(`/peminjaman/detail/${row.id}`)}
-                          >
-                            <ZoomIn/>
-                          </IconButton>                                           */}
+                          { row.status === "Dipinjam" && (
+                            <>
+                              <IconButton 
+                                color="success"
+                                onClick={() => {
+                                  handleUpdateStatus(row.id, "Dikembalikan", row.kode_buku, dendaKeterlambatan(row.tgl_pinjam)) 
+                                }}
+                              >
+                                <Done/>
+                              </IconButton>                   
+                              <IconButton 
+                                color="primary"
+                                onClick={() => {
+                                  kirimEmail(row.email, row.nama_peminjam, statusPeminjaman(row.tgl_pinjam), denda)
+                                }}
+                              >
+                                <NotificationsActive/>
+                              </IconButton> 
+                            </>
+                          )}
                           <IconButton 
                             color="error"
                             onClick={() => {
@@ -209,7 +324,7 @@ const PeminjamanPage = () => {
                             }}
                           >
                             <Delete/>
-                          </IconButton>                      
+                          </IconButton>                       
                         </TableCell>
                       </TableRow>
                     );
